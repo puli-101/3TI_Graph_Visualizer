@@ -6,10 +6,7 @@
 
 In particular, given the finite dimensional vector spaces $U,V,W$ of dimensions $n,m,k$ over $\mathbb{F}_q$, we represent a 3-tensor as the trilinear form $\mathcal{C} : U \times V \times W \rightarrow \mathbb{F}_q$. 
 
-The computed set of vertices $\mathcal{V}(\mathcal{C})$, corresponds to the disjoint union of projective spaces
-$
-\mathcal{V}(\mathcal{C}) := \mathbb{P}(U) \cup \mathbb{P}(V) \cup \mathbb{P}(W)
-$. On a high level, the set of edges $\mathcal{E}(\mathcal{C})$ is computed as the set of pairs of representatives $(u,v) \in \mathbb{P}(U) \times \mathbb{P}(V)$ (for instance), for which the missing coordinate vanishes, e.g. $(u,v) \in \mathcal{E}(\mathcal{C}) \iff \forall w \in W \mathcal(C)(u,v,w) = 0$ (for implementation details see section 4.)
+The computed set of vertices $\mathcal{V}(\mathcal{C})$, corresponds to the disjoint union of projective spaces $\mathcal{V}(\mathcal{C}) := \mathbb{P}(U) \cup \mathbb{P}(V) \cup \mathbb{P}(W)$. On a high level, the set of edges $\mathcal{E}(\mathcal{C})$ is computed as the set of pairs of representatives $(u,v) \in \mathbb{P}(U) \times \mathbb{P}(V)$ (for instance), for which the missing coordinate vanishes, e.g. $(u,v) \in \mathcal{E}(\mathcal{C}) \iff \forall w \in W \mathcal(C)(u,v,w) = 0$ (for implementation details see section 4.)
 
 
 ## 2. Command-line arguments

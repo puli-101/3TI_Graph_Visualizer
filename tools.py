@@ -12,7 +12,7 @@ def save_graph(n,m,k,q):
     #q order of field
 
     # Define the directory and base file name
-    directory = '/home/david/Desktop/3TIP/'
+    directory = './graph_images/'
     base_filename = f'T_n{n}_m{m}_k{k}_q{q}'
     extension = '.png'
 
@@ -32,7 +32,7 @@ def save_graph(n,m,k,q):
 
 
 #Displays sage graph by translating it into NX
-def graph_display(G,n,m,k,q):
+def graph_display(G,n,m,k,q,labeled=False):
     #G sage graph
     #n,m,k dimensions
     #q field
@@ -43,6 +43,6 @@ def graph_display(G,n,m,k,q):
     G_vis.add_edges_from([(u,v) for u,v,_ in G.edges()])
 
     # Draw the graph
-    nx.draw(G_vis, with_labels=False, node_color='white', edgecolors='black')
+    nx.draw(G_vis, with_labels=labeled, node_color='white', edgecolors='black')
     save_graph(n,m,k,q)
     plt.show()

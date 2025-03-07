@@ -13,12 +13,11 @@ def argparser():
     parser.add_argument("-m", type=int, default=4, help="Dimension m for the second vector space")
     parser.add_argument("-k", type=int, default=4, help="Dimension k for the third vector space")
     parser.add_argument("-q", type=int, default=5, help="Prime field size")
+    parser.add_argument("--deg_ubound", type=int, default=1000, help="Filters all nodes of degree greater or equal than specified")
+    parser.add_argument("--deg_lbound", type=int, default=0, help="Filters all nodes of degree less or equal than specified")
     parser.add_argument("--labeled", action="store_true", help="Show graph with vertex labels")
     parser.add_argument("--verbose", action="store_true", help="Show extra info on terminal")
     parser.add_argument("--isolated_nodes", action="store_true", help="Displays nodes of degree zero on the final graph")
-    parser.add_argument("--degree_ubound", type=int, default=100, help="Filters all nodes of degree greater or equal than specified")
-    parser.add_argument("--degree_lbound", type=int, default=0, help="Filters all nodes of degree lower or equal than specified")
-
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -40,8 +39,12 @@ if __name__ == "__main__":
     #Display degree zero nodes?
     deg_0 = args.isolated_nodes 
 
+    #degree upper and lower bound filter
+    u_bound = args.deg_ubound
+    l_bound = args.deg_lbound
+
     #check passed parameters
-    print(n,m,k,q,labeled, verbose)
+    print(n,m,k,q,labeled, verbose, u_bound, l_bound)
     
     #Create a random 3-tensor T of dimensions n x m x k over F.
     T = [[[F.random_element() for _ in range(k)] for _ in range(m)] for _ in range(n)]
@@ -52,18 +55,28 @@ if __name__ == "__main__":
     for i in range(n):
         print(T[i])
     
+    #Serialize and save graph into graph.txt
+    # TODO
+
     if verbose:
         print("\nGraph vertices: ")
         print(G.vertices())
         print("\nGraph edges: ")
         print(G.edges())
 
-    #Identify isolated vertices
-    if not(deg_0):
-        print("Removing isolated vertices")
-        isolated_vertices = [v for v in G.vertices() if G.degree(v) == 0]
-        G.delete_vertices(isolated_vertices)
+    #Identify vertices inside upper and lower bound
+    """
+    print("Removing vertices of out-of-range degree")
+    if deg_0:
+        l_bound = -1
+    isolated_vertices = []
+    for v in G.vertices():
+        deg = G.degree(v)
+        if deg > l_bound and deg < u_bound:
+            isolated_vertices.append(v)
+    G.delete_vertices(isolated_vertices)
+    """
 
     #Display graph
-    graph_display(G,n,m,k,q)
+    graph_display(G,n,m,k,q, labeled=labeled)
     

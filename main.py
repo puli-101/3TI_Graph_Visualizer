@@ -65,17 +65,15 @@ if __name__ == "__main__":
         print(G.edges())
 
     #Identify vertices inside upper and lower bound
-    """
     print("Removing vertices of out-of-range degree")
     if deg_0:
         l_bound = -1
-    isolated_vertices = []
+    out_of_bounds = []
     for v in G.vertices():
         deg = G.degree(v)
-        if deg > l_bound and deg < u_bound:
-            isolated_vertices.append(v)
-    G.delete_vertices(isolated_vertices)
-    """
+        if deg <= l_bound or deg >= u_bound:
+            out_of_bounds.append(v)
+    G.delete_vertices(out_of_bounds)
 
     #Display graph
     graph_display(G,n,m,k,q, labeled=labeled)

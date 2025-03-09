@@ -119,3 +119,34 @@ def tensor_to_graph(T, n, m, k, F):
                 G.add_edge(v_label, w_label)
     
     return G
+
+def apply_isometry(T, A, B, C):
+    """
+    Given a 3-tensor T (represented as a 3d list) and invertible matrices A, B, C,
+    return the new 3-tensor T' defined by
+       T'(u,v,w) = T(A*u, B*v, C*w)
+    with coefficients:
+       T'_{p,q,r} = sum_{i,j,k} T_{i,j,k} * A[i,p] * B[j,q] * C[k,r].
+       
+    Assumes T has dimensions n x m x k, A is n x n, B is m x m, and C is k x k.
+    """
+    n = len(T)
+    m = len(T[0])
+    k = len(T[0][0])
+    
+    # Initialize the new tensor as a 3d list with zeros.
+    T_prime = [[[0 for r in range(k)] for q in range(m)] for p in range(n)]
+    
+    # Loop over the new indices p, q, r.
+    for p in range(n):
+        for q in range(m):
+            for r in range(k):
+                s = 0
+                # Sum over the old indices i, j, k_idx.
+                for i in range(n):
+                    for j in range(m):
+                        for k_idx in range(k):
+                            s += T[i][j][k_idx] * A[i, p] * B[j, q] * C[k_idx, r]
+                T_prime[p][q][r] = s
+    return T_prime
+

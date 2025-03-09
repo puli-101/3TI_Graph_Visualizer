@@ -2,6 +2,7 @@ import time
 import argparse
 from tensor import *
 from tools import *
+from threading import Thread
 
 def argparser():
     #Parses the values of (n,m,k,q,labeled) as described
@@ -19,6 +20,36 @@ def argparser():
     parser.add_argument("--verbose", action="store_true", help="Show extra info on terminal")
     parser.add_argument("--isolated_nodes", action="store_true", help="Displays nodes of degree zero on the final graph")
     return parser.parse_args()
+
+def gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose):
+    start = time.time()
+    G = tensor_to_graph(T, n, m, k, F)
+    print(f"Computation time: {time.time() - start}")
+    print("Tensor T:")
+    for i in range(n):
+        print(T[i])
+    
+    #Serialize and save graph into graph.txt
+    # TODO
+
+    if verbose:
+        print("\nGraph vertices: ")
+        print(G.vertices())
+        print("\nGraph edges: ")
+        print(G.edges())
+
+    #Identify vertices inside upper and lower bound
+    print("Removing vertices of out-of-range degree")
+    if deg_0:
+        l_bound = -1
+    out_of_bounds = []
+    for v in G.vertices():
+        deg = G.degree(v)
+        if deg <= l_bound or deg >= u_bound:
+            out_of_bounds.append(v)
+    G.delete_vertices(out_of_bounds)
+
+    return G
 
 if __name__ == "__main__":
     args = argparser()
@@ -48,33 +79,30 @@ if __name__ == "__main__":
     
     #Create a random 3-tensor T of dimensions n x m x k over F.
     T = [[[F.random_element() for _ in range(k)] for _ in range(m)] for _ in range(n)]
-    start = time.time()
-    G = tensor_to_graph(T, n, m, k, F)
-    print(f"Computation time: {time.time() - start}")
-    print("Tensor T:")
-    for i in range(n):
-        print(T[i])
+
+    G = gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose)
+
+    #Display graph in one thread
+    Thread(target=graph_display, args=[G,n,m,k,q, labeled]).run()
+
+    #Generate element from orbit of T
+    print("Applying random isometry to tensor")
     
-    #Serialize and save graph into graph.txt
-    # TODO
+    A = random_matrix(F, n, n, algorithm='unimodular')
+    B = random_matrix(F, m, m, algorithm='unimodular')
+    C = random_matrix(F, k, k, algorithm='unimodular')
 
     if verbose:
-        print("\nGraph vertices: ")
-        print(G.vertices())
-        print("\nGraph edges: ")
-        print(G.edges())
+        print("A")
+        print(A)
+        print("B")
+        print(B)
+        print("C")
+        print(C)
+    
+    T2 = apply_isometry(T, A, B, C)
+    
+    G2 = gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose)
 
-    #Identify vertices inside upper and lower bound
-    print("Removing vertices of out-of-range degree")
-    if deg_0:
-        l_bound = -1
-    out_of_bounds = []
-    for v in G.vertices():
-        deg = G.degree(v)
-        if deg <= l_bound or deg >= u_bound:
-            out_of_bounds.append(v)
-    G.delete_vertices(out_of_bounds)
-
-    #Display graph
-    graph_display(G,n,m,k,q, labeled=labeled)
+    graph_display(G2,n,m,k,q, labeled=labeled)
     

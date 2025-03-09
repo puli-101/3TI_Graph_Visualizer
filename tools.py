@@ -11,20 +11,20 @@ def save_graph(n,m,k,q):
     #n,m,k dimensions of graph
     #q order of field
 
-    # Define the directory and base file name
+    #Define the directory and base file name
     directory = './graph_images/'
     base_filename = f'T_n{n}_m{m}_k{k}_q{q}'
     extension = '.png'
 
-    # Ensure the directory exists
+    #Ensure the directory exists
     os.makedirs(directory, exist_ok=True)
 
-    # Initialize a counter and check if the file exists
+    #Initialize a counter and check if the file exists
     n = 0
     while os.path.exists(os.path.join(directory, f"{base_filename}_{n}{extension}")):
         n += 1
 
-    # Create the new file name
+    #Create the new file name
     output_path = os.path.join(directory, f"{base_filename}_{n}{extension}")
     #dpi_value = 300
 
@@ -37,12 +37,18 @@ def graph_display(G,n,m,k,q,labeled=False):
     #n,m,k dimensions
     #q field
 
+    #set fullscreen
+    manager = plt.get_current_fig_manager()
+    manager.resize(*manager.window.maxsize())
+
     G_vis = nx.Graph()
-    # Add nodes and edges
+    #Add nodes and edges
     G_vis.add_nodes_from(G.vertices())
     G_vis.add_edges_from([(u,v) for u,v,_ in G.edges()])
 
-    # Draw the graph
+    #Draw the graph
     nx.draw(G_vis, with_labels=labeled, node_color='white', edgecolors='black')
     save_graph(n,m,k,q)
     plt.show()
+
+    

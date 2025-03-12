@@ -19,6 +19,7 @@ def argparser():
     parser.add_argument("--labeled", action="store_true", help="Show graph with vertex labels")
     parser.add_argument("--verbose", action="store_true", help="Show extra info on terminal")
     parser.add_argument("--isolated_nodes", action="store_true", help="Displays nodes of degree zero on the final graph")
+    parser.add_argument("--isometry", action="store_true", help="Applies a random isometry to the original tensor and displays it")
     return parser.parse_args()
 
 def gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose):
@@ -74,6 +75,9 @@ if __name__ == "__main__":
     u_bound = args.deg_ubound
     l_bound = args.deg_lbound
 
+    #test if isometry flag is on
+    iso = args.isometry
+
     #check passed parameters
     print(n,m,k,q,labeled, verbose, u_bound, l_bound)
     
@@ -83,26 +87,31 @@ if __name__ == "__main__":
     G = gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose)
 
     #Display graph in one thread
-    Thread(target=graph_display, args=[G,n,m,k,q, labeled]).run()
+    #Thread(target=graph_display, args=[G,n,m,k,q, labeled]).run()
+    graph_display(G,n,m,k,q,labeled=labeled)
 
-    #Generate element from orbit of T
-    print("Applying random isometry to tensor")
-    
-    A = random_matrix(F, n, n, algorithm='unimodular')
-    B = random_matrix(F, m, m, algorithm='unimodular')
-    C = random_matrix(F, k, k, algorithm='unimodular')
+    if iso:
+        #Generate element from orbit of T
+        print("Applying random isometry to tensor")
+        
+        A = random_matrix(F, n, n, algorithm='unimodular')
+        B = random_matrix(F, m, m, algorithm='unimodular')
+        C = random_matrix(F, k, k, algorithm='unimodular')
 
-    if verbose:
-        print("A")
-        print(A)
-        print("B")
-        print(B)
-        print("C")
-        print(C)
-    
-    T2 = apply_isometry(T, A, B, C)
-    
-    G2 = gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose)
+        if verbose:
+            print("A")
+            print(A)
+            print("B")
+            print(B)
+            print("C")
+            print(C)
+        
+        #Apply isometry: T2 = T(A,B,C)
+        T2 = apply_isometry(T, A, B, C)
+        
+        #Generate graph and filter nodes based on cmd line arguments
+        G2 = gen_graph(T2, n,m,k, F, deg_0, l_bound, u_bound,verbose)
 
-    graph_display(G2,n,m,k,q, labeled=labeled)
+        #Display graph
+        graph_display(G2,n,m,k,q, labeled=labeled)
     

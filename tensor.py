@@ -121,15 +121,10 @@ def tensor_to_graph(T, n, m, k, F):
     return G
 
 def apply_isometry(T, A, B, C):
-    """
-    Given a 3-tensor T (represented as a 3d list) and invertible matrices A, B, C,
-    return the new 3-tensor T' defined by
-       T'(u,v,w) = T(A*u, B*v, C*w)
-    with coefficients:
-       T'_{p,q,r} = sum_{i,j,k} T_{i,j,k} * A[i,p] * B[j,q] * C[k,r].
-       
-    Assumes T has dimensions n x m x k, A is n x n, B is m x m, and C is k x k.
-    """
+    #T : 3-tensor represented as a 3d list
+    #A,B,C Invertible matrices
+    #returns: T' s.t. T'(u,v,w) = T(Au,Bv,Cw) 
+    #w coefficients T'_{p,q,r} = sum_{i,j,k} T_{i,j,k} * A[i,p] * B[j,q] * C[k,r].
     n = len(T)
     m = len(T[0])
     k = len(T[0][0])

@@ -82,8 +82,9 @@ if __name__ == "__main__":
     #test if isometry flag is on
     iso = args.isometry
 
-    #Extract cycle size
+    #Extract cycle size and cycle ranges
     cycle_size = args.c
+    strict = args.strict
 
     #check passed parameters
     print(n,m,k,q,labeled, verbose, u_bound, l_bound)
@@ -92,11 +93,8 @@ if __name__ == "__main__":
     T = [[[F.random_element() for _ in range(k)] for _ in range(m)] for _ in range(n)]
     G = gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose)
 
-    #Display graph in one thread
-    #Thread(target=graph_display, args=[G,n,m,k,q, labeled]).run()
-    graph_display(G,n,m,k,q,labeled=labeled, cycle=cycle_size)
-
-
+    #Display graph
+    graph_display(G,n,m,k,q,labeled=labeled, cycle=cycle_size, strict=strict)
 
     
     if iso:

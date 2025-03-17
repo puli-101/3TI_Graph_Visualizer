@@ -82,7 +82,7 @@ def save_graph(n,m,k,q):
 
 
 #Displays sage graph by translating it into NX
-def graph_display(G,n,m,k,q,cycle=None,labeled=False, save=False):
+def graph_display(G,n,m,k,q,cycle=None,labeled=False, save=False, strict=False):
     #G sage graph
     #n,m,k dimensions
     #q field
@@ -101,9 +101,10 @@ def graph_display(G,n,m,k,q,cycle=None,labeled=False, save=False):
 
     #if there is a specific type of cycle to compute
     if cycle != None and cycle > 2:
+        u_bound = 3 if not(strict) else cycle
         special_nodes = []
         # Define special nodes (e.g., nodes divisible by 20)
-        for i in range(3, cycle+1):
+        for i in range(u_bound, cycle+1):
             print(f"Finding cycles of length {i}...")
             special_nodes += find_cycles_of_length_k(G,i)
             print(special_nodes)

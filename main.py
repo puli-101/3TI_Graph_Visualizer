@@ -18,8 +18,9 @@ def argparser():
     parser.add_argument("--deg_lbound", type=int, default=0, help="Filters all nodes of degree less or equal than specified")
     parser.add_argument("--labeled", action="store_true", help="Show graph with vertex labels")
     parser.add_argument("--verbose", action="store_true", help="Show extra info on terminal")
-    parser.add_argument("--isolated_nodes", action="store_true", help="Displays nodes of degree zero on the final graph")
+    #parser.add_argument("--isolated_nodes", action="store_true", help="Displays nodes of degree zero on the final graph")
     parser.add_argument("--isometry", action="store_true", help="Applies a random isometry to the original tensor and displays it")
+    parser.add_argument("-c", type=int, default=None, help="Highlights cycles of length c > 2 in the final graph")
     return parser.parse_args()
 
 def gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose):
@@ -29,6 +30,7 @@ def gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose):
     print("Tensor T:")
     for i in range(n):
         print(T[i])
+        print()
     
     #Serialize and save graph into graph.txt
     # TODO
@@ -69,7 +71,7 @@ if __name__ == "__main__":
     #Show extra info?
     verbose = args.verbose
     #Display degree zero nodes?
-    deg_0 = args.isolated_nodes 
+    deg_0 = False # args.isolated_nodes 
 
     #degree upper and lower bound filter
     u_bound = args.deg_ubound
@@ -78,18 +80,23 @@ if __name__ == "__main__":
     #test if isometry flag is on
     iso = args.isometry
 
+    #Extract cycle size
+    cycle_size = args.c
+
     #check passed parameters
     print(n,m,k,q,labeled, verbose, u_bound, l_bound)
     
     #Create a random 3-tensor T of dimensions n x m x k over F.
     T = [[[F.random_element() for _ in range(k)] for _ in range(m)] for _ in range(n)]
-
     G = gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose)
 
     #Display graph in one thread
     #Thread(target=graph_display, args=[G,n,m,k,q, labeled]).run()
-    graph_display(G,n,m,k,q,labeled=labeled)
+    graph_display(G,n,m,k,q,labeled=labeled, cycle=cycle_size)
 
+
+
+    
     if iso:
         #Generate element from orbit of T
         print("Applying random isometry to tensor")
@@ -98,6 +105,8 @@ if __name__ == "__main__":
         B = random_matrix(F, m, m, algorithm='unimodular')
         C = random_matrix(F, k, k, algorithm='unimodular')
 
+
+        #show isometry
         if verbose:
             print("A")
             print(A)

@@ -6,6 +6,56 @@ import os
 Graph display and image/graph serialization functions
 """
 
+
+#Finds all unique simple cycles of length k in a graph G
+#used in graph display to color these ndoes differently
+def find_cycles_of_length_k(G, k):
+    """
+    G: A SageMath graph object
+    k: The desired cycle length
+
+    return: A list of cycles, where each cycle is represented as a tuple of vertices
+
+    A cycle is considered unique up to cyclic permutation and reversal.
+    To avoid duplicates, we only add a cycle if its starting vertex is the smallest 
+    in the cycle
+    """
+    cycles_set = set()
+    
+    def dfs(start, current, path, visited):
+        if len(path) > k:
+            return
+
+        if len(path) == k:
+            #check if there's an edge from the current vertex back to the start
+            if start in G.neighbors(current):
+                cycle = path[:]  # A candidate cycle
+                #to avoid over populating cycles_set only add cycle if start node has minimal label
+                if start == min(cycle):
+                    #At this point one could create a canonical representation:
+                    #Compare the ordering of the cycle (after the start) with its reverse.
+                    #forward = cycle[1:]
+                    #backward = list(reversed(cycle[1:]))
+                    #if backward < forward:
+                    #    canonical_cycle = (cycle[0],) + tuple(backward)
+                    #else:
+                    #    canonical_cycle = tuple(cycle)
+                    #cycles_set.add(canonical_cycle)
+                    #however it does not really matter in terms of computation
+                    cycles_set.add(cycle)
+            return
+        
+        for neighbor in G.neighbors(current):
+            if neighbor not in visited:
+                dfs(start, neighbor, path + [neighbor], visited | {neighbor})
+    
+    #DFS starting from each node in graph
+    for vertex in G.vertices():
+        dfs(vertex, vertex, [vertex], {vertex})
+        
+    return list(cycles_set)
+
+
 #Saves displayed graph into png image
 def save_graph(n,m,k,q):
     #n,m,k dimensions of graph
@@ -32,7 +82,7 @@ def save_graph(n,m,k,q):
 
 
 #Displays sage graph by translating it into NX
-def graph_display(G,n,m,k,q,labeled=False, save=True):
+def graph_display(G,n,m,k,q,cycle=None,labeled=False, save=False):
     #G sage graph
     #n,m,k dimensions
     #q field
@@ -41,14 +91,37 @@ def graph_display(G,n,m,k,q,labeled=False, save=True):
     manager = plt.get_current_fig_manager()
     manager.resize(*manager.window.maxsize())
 
+    #transform SageMath graph to NX graph
     G_vis = nx.Graph()
+
     #Add nodes and edges
     G_vis.add_nodes_from(G.vertices())
     G_vis.add_edges_from([(u,v) for u,v,_ in G.edges()])
 
-    #Draw the graph
-    nx.draw(G_vis, with_labels=labeled, node_color='white', edgecolors='black')
 
+    #if there is a specific type of cycle to compute
+    if cycle != None and cycle > 2:
+        # Define special nodes (e.g., nodes divisible by 20)
+        print(f"Finding cycles of length {cycle}...")
+        special_nodes = find_cycles_of_length_k(G,cycle)
+        print(special_nodes)
+        #Use a layout for consistent positioning
+        pos = nx.spring_layout(G_vis)
+
+        #Draw default nodes with a default color
+        nx.draw_networkx_nodes(G_vis, pos, node_color='white', edgecolors='black')
+
+        #Draw special nodes with a specific color
+        nx.draw_networkx_nodes(G_vis, pos, nodelist=special_nodes, node_color='red', edgecolors='black')
+
+        #Draw the edges and labels
+        nx.draw_networkx_edges(G_vis, pos)
+        #nx.draw_networkx_labels(G_vis, pos)
+    else:
+        #Otherwise just draw the graph
+        nx.draw(G_vis, with_labels=labeled, node_color='white', edgecolors='black')
+
+    #save graph to file
     if save:
         save_graph(n,m,k,q)
     

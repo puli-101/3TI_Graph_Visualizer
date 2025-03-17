@@ -60,7 +60,7 @@ def is_edge_VW(T, v, w):
     return True
 
 # Main function that builds the graph associated with a 3-tensor.
-def tensor_to_graph(T, n, m, k, F):
+def tensor_to_graph(T, n, m, k, F, verbose=False):
     #List elements of the projective spaces for U, V, and W.
     P_U = list(ProjectiveSpace(n-1, F))
     P_V = list(ProjectiveSpace(m-1, F))
@@ -80,19 +80,30 @@ def tensor_to_graph(T, n, m, k, F):
     vv_map = {}  
     
     print("Labeling all vertices")
+    #progressive labeling with unique integer ID
+    #previous versions set label as ("U",idx)/("V",idx)/("W",idx)
+    id_c = 0
     for idx, p in enumerate(P_U):
-        label = ("U", idx)
-        vertices_u.append(label)
+        id_c += 1
+        label = id_c 
+        vertices_u.append(id_c)
         vv_map[label] = vector(F, p)  
     for idx, p in enumerate(P_V):
-        label = ("V", idx)
+        id_c += 1
+        label = id_c 
         vertices_v.append(label)
         vv_map[label] = vector(F, p)
     for idx, p in enumerate(P_W):
-        label = ("W", idx)
+        id_c += 1
+        label = id_c
         vertices_w.append(label)
         vv_map[label] = vector(F, p)
     
+    #display label-node mapping
+    if verbose:
+        for k in vv_map.keys():
+            print(k, vv_map[k])
+
     vertices = vertices_u + vertices_v + vertices_w
     #Create an graph and add all vertices
     G = Graph(multiedges=False)
@@ -124,7 +135,7 @@ def apply_isometry(T, A, B, C):
     #T : 3-tensor represented as a 3d list
     #A,B,C Invertible matrices
     #returns: T' s.t. T'(u,v,w) = T(Au,Bv,Cw) 
-    #w coefficients T'_{p,q,r} = sum_{i,j,k} T_{i,j,k} * A[i,p] * B[j,q] * C[k,r].
+    #w coefficients T'_{p,q,r} = sum_{i,j,k} T_{i,j,k} * A[i,p] * B[j,q] * C[k,r]
     n = len(T)
     m = len(T[0])
     k = len(T[0][0])

@@ -14,20 +14,20 @@ def argparser():
     parser.add_argument("-m", type=int, default=4, help="Dimension m for the second vector space")
     parser.add_argument("-k", type=int, default=4, help="Dimension k for the third vector space")
     parser.add_argument("-q", type=int, default=5, help="Prime field size")
-    parser.add_argument("-c", type=int, default=None, help="Highlights all cycles of length 2 < c' <= c in the final graph")
-    parser.add_argument("--strict", action="store_true", help="Only highlights cycle of length c")
-    #parser.add_argument("--deg_ubound", type=int, default=1000, help="Filters all nodes of degree greater or equal than specified")
-    #parser.add_argument("--deg_lbound", type=int, default=0, help="Filters all nodes of degree less or equal than specified")
+    parser.add_argument("-c", type=int, default=None, help="Highlights all cycles of length c in the final graph")
+    parser.add_argument("--loose", action="store_true", help="Highlights all cycles of length 2 < c' <= c")
+    parser.add_argument("--deg_ubound", type=int, default=1000, help="Filters all nodes of degree greater or equal than specified")
+    parser.add_argument("--deg_lbound", type=int, default=0, help="Filters all nodes of degree less or equal than specified")
     parser.add_argument("--labeled", action="store_true", help="Show graph with vertex labels")
     parser.add_argument("--verbose", action="store_true", help="Show extra info on terminal")
-    #parser.add_argument("--isolated_nodes", action="store_true", help="Displays nodes of degree zero on the final graph")
+    parser.add_argument("--isolated_nodes", action="store_true", help="Displays nodes of degree zero on the final graph")
     parser.add_argument("--isometry", action="store_true", help="Applies a random isometry to the original tensor and displays it")
     
     return parser.parse_args()
 
 def gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose):
     start = time.time()
-    G = tensor_to_graph(T, n, m, k, F)
+    G = tensor_to_graph(T, n, m, k, F, verbose)
     print(f"Computation time: {time.time() - start}")
     print("Tensor T:")
     for i in range(n):
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     #Extract cycle size and cycle ranges
     cycle_size = args.c
-    strict = args.strict
+    loose = args.loose
 
     #check passed parameters
     print(n,m,k,q,labeled, verbose, u_bound, l_bound)
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     G = gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose)
 
     #Display graph
-    graph_display(G,n,m,k,q,labeled=labeled, cycle=cycle_size, strict=strict)
+    graph_display(G,n,m,k,q,labeled=labeled, cycle=cycle_size, loose=loose)
 
     
     if iso:
@@ -122,5 +122,5 @@ if __name__ == "__main__":
         G2 = gen_graph(T2, n,m,k, F, deg_0, l_bound, u_bound,verbose)
 
         #Display graph
-        graph_display(G2,n,m,k,q, labeled=labeled)
+        graph_display(G2,n,m,k,q, labeled=labeled, cycle=cycle_size, loose=loose)
     

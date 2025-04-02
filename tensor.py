@@ -101,6 +101,7 @@ def tensor_to_graph(T, n, m, k, F, verbose=False):
     
     #display label-node mapping
     if verbose:
+        print("Label-node mapping")
         for k in vv_map.keys():
             print(k, vv_map[k])
 
@@ -156,3 +157,32 @@ def apply_isometry(T, A, B, C):
                 T_prime[p][q][r] = s
     return T_prime
 
+
+#========= ADDITIONAL FUNCTIONS FOR TESTING ================
+#Prints evaluation of tensor C for a candidate triangle T
+#tests for each element in basis if the evaluation equals 0
+#Supposition: n = m = k
+def test_triangle(C, T, basis):
+    print("Evaluating Tensor Triangle")
+    print(T)
+    print("Evaluating (u,v)")
+    for v in basis:
+        print(f"{v}:\t{tensor_value(C,T[0],T[1], v)}")
+    print(f"is_edge result: {is_edge_UV(C,T[0],T[1])}")
+    print("Evaluating (u,w)")
+    for v in basis:
+        print(f"{v}:\t{tensor_value(C,T[0],v, T[2])}")
+    print(f"is_edge result: {is_edge_UW(C,T[0],T[2])}")
+    print("Evaluating (v,w)")
+    for v in basis:
+        print(f"{v}:\t{tensor_value(C,v,T[1], T[2])}")
+    print(f"is_edge result: {is_edge_VW(C,T[1],T[2])}\n")
+
+#Transforms 3d-array of int's to 3d-array of elements in GF(q) 
+def coerce_tensor(C, q):
+    return [[coerce_list(l,q) for l in M] for M in C]
+
+#Transforms 3d-array of int's to 3d-array of elements in GF(q) 
+def coerce_list(v, q):
+    F = GF(q)
+    return [F(x) for x in v]

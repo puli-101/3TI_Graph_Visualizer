@@ -22,13 +22,17 @@ def argparser():
     parser.add_argument("--verbose", action="store_true", help="Show extra info on terminal")
     parser.add_argument("--isolated_nodes", action="store_true", help="Displays nodes of degree zero on the final graph")
     parser.add_argument("--isometry", action="store_true", help="Applies a random isometry to the original tensor and displays it")
-    
+    parser.add_argument("--no_visualization", action="store_true", help="Prevents the display of a new tab with the resulting tensor graph")
+    parser.add_argument("--minimal", action="store_true", help="Only prints in terminal the random tensor, and, if enabled, all cycles of various lengths")
+    parser.add_argument("--load_tensor", type=str, default="", help="Loads tensor from file instead of generating a random one [TODO]")
+    parser.add_argument("--load_graph", type=str, default="", help="Loads tensor graph from file instead of calculating one given a random tensor [TODO]")
     return parser.parse_args()
 
-def gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose):
+def gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose,minimal=False):
     start = time.time()
-    G = tensor_to_graph(T, n, m, k, F, verbose)
-    print(f"Computation time: {time.time() - start}")
+    G = tensor_to_graph(T, n, m, k, F, verbose, minimal)
+    if not(minimal):
+        print(f"Computation time: {time.time() - start}")
     print("Tensor T:")
     for i in range(n):
         print(T[i])
@@ -37,14 +41,15 @@ def gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose):
     #Serialize and save graph into graph.txt
     # TODO
 
-    if verbose:
+    if verbose and not(minimal):
         print("\nGraph vertices: ")
         print(G.vertices())
         print("\nGraph edges: ")
         print(G.edges())
 
     #Identify vertices inside upper and lower bound
-    print("Removing vertices of out-of-range degree")
+    if not(minimal):
+        print("Removing vertices of out-of-range degree")
     if deg_0:
         l_bound = -1
     out_of_bounds = []
@@ -72,6 +77,9 @@ if __name__ == "__main__":
     labeled = args.labeled
     #Show extra info?
     verbose = args.verbose
+    #Show no info?
+    minimal = args.minimal
+
     #Display degree zero nodes?
     deg_0 = False # args.isolated_nodes 
 
@@ -87,19 +95,21 @@ if __name__ == "__main__":
     loose = args.loose
 
     #check passed parameters
-    print(n,m,k,q,labeled, verbose, u_bound, l_bound)
+    if not(minimal):
+        print(n,m,k,q,labeled, verbose, u_bound, l_bound)
     
     #Create a random 3-tensor T of dimensions n x m x k over F.
     T = [[[F.random_element() for _ in range(k)] for _ in range(m)] for _ in range(n)]
-    G = gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose)
+    G = gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose, minimal)
 
     #Display graph
-    graph_display(G,n,m,k,q,labeled=labeled, cycle=cycle_size, loose=loose)
+    graph_display(G,n,m,k,q,labeled=labeled, cycle=cycle_size, loose=loose, minimal=minimal)
 
     
     if iso:
         #Generate element from orbit of T
-        print("Applying random isometry to tensor")
+        if not(minimal):
+            print("Applying random isometry to tensor")
         
         A = random_matrix(F, n, n, algorithm='unimodular')
         B = random_matrix(F, m, m, algorithm='unimodular')
@@ -107,7 +117,7 @@ if __name__ == "__main__":
 
 
         #show isometry
-        if verbose:
+        if verbose and not(minimal):
             print("A")
             print(A)
             print("B")
@@ -119,8 +129,8 @@ if __name__ == "__main__":
         T2 = apply_isometry(T, A, B, C)
         
         #Generate graph and filter nodes based on cmd line arguments
-        G2 = gen_graph(T2, n,m,k, F, deg_0, l_bound, u_bound,verbose)
+        G2 = gen_graph(T2, n,m,k, F, deg_0, l_bound, u_bound,verbose, minimal)
 
         #Display graph
-        graph_display(G2,n,m,k,q, labeled=labeled, cycle=cycle_size, loose=loose)
+        graph_display(G2,n,m,k,q, labeled=labeled, cycle=cycle_size, loose=loose, minimal=minimal)
     

@@ -82,7 +82,7 @@ def save_graph(n,m,k,q):
 
 
 #Displays sage graph by translating it into NX
-def graph_display(G,n,m,k,q,cycle=None,labeled=False, save=False, loose=False):
+def graph_display(G,n,m,k,q,cycle=None,labeled=False, save=False, loose=False, minimal=False):
     #G sage graph
     #n,m,k dimensions
     #q field
@@ -124,10 +124,11 @@ def graph_display(G,n,m,k,q,cycle=None,labeled=False, save=False, loose=False):
         #Otherwise just draw the graph
         nx.draw(G_vis, with_labels=labeled, node_color='white', edgecolors='black')
 
-    #save graph to file
-    if save:
-        save_graph(n,m,k,q)
-    
-    plt.show()
+    if not(minimal):
+        #save graph to file
+        if save:
+            save_graph(n,m,k,q)
+        
+        plt.show()
 
     

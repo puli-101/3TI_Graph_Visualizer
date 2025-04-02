@@ -60,16 +60,17 @@ def is_edge_VW(T, v, w):
     return True
 
 # Main function that builds the graph associated with a 3-tensor.
-def tensor_to_graph(T, n, m, k, F, verbose=False):
+def tensor_to_graph(T, n, m, k, F, verbose=False, minimal=False):
     #List elements of the projective spaces for U, V, and W.
     P_U = list(ProjectiveSpace(n-1, F))
     P_V = list(ProjectiveSpace(m-1, F))
     P_W = list(ProjectiveSpace(k-1, F))
     
-    print("Sizes of projective Spaces:")
-    print(f"U : {len(P_U)}")
-    print(f"V : {len(P_V)}")
-    print(f"W : {len(P_W)}")
+    if not(minimal):
+        print("Sizes of projective Spaces:")
+        print(f"U : {len(P_U)}")
+        print(f"V : {len(P_V)}")
+        print(f"W : {len(P_W)}")
 
     #Create vertices for each projective point
     vertices = []
@@ -79,7 +80,8 @@ def tensor_to_graph(T, n, m, k, F, verbose=False):
     #Maps vertex label to its vector
     vv_map = {}  
     
-    print("Labeling all vertices")
+    if not(minimal):
+        print("Labeling all vertices")
     #progressive labeling with unique integer ID
     #previous versions set label as ("U",idx)/("V",idx)/("W",idx)
     id_c = 0
@@ -111,19 +113,22 @@ def tensor_to_graph(T, n, m, k, F, verbose=False):
     G.add_vertices(vertices)
     
     #Add edges
-    print("Adding U V edges")
+    if not(minimal):
+        print("Adding U V edges")
     #Edge between a vertex from U and one from V if C(u,v,-) = 0
     for u_label in vertices_u:
         for v_label in vertices_v:
             if is_edge_UV(T, vv_map[u_label], vv_map[v_label]):
                 G.add_edge(u_label, v_label)
-    print("Adding U W edges")
+    if not(minimal):
+        print("Adding U W edges")
     #Edge between U and W 
     for u_label in vertices_u:
         for w_label in vertices_w:
             if is_edge_UW(T, vv_map[u_label], vv_map[w_label]):
                 G.add_edge(u_label, w_label)
-    print("Adding V W edges")
+    if not(minimal):
+        print("Adding V W edges")
     #Edge between V and W 
     for v_label in vertices_v:
         for w_label in vertices_w:

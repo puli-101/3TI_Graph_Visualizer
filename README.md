@@ -18,11 +18,18 @@ The computed set of vertices $\mathcal{V}(\mathcal{C})$, corresponds to the disj
 | -m  M  | Dimension m for the second vector space |  4| 
 | -k  K  | Dimension k for the third vector space | 4 |
 | -q  Q  | Prime field size | 5 |
+|-c C    | Highlights all cycles of length c in the final graph | None |
+|--loose | Highlights all cycles of length 2 < c' <= c | false |
 | --deg_lbound D | Filters out all nodes of degree less or equal than specified | 0 |
 | --deg_ubound D | Filters out all nodes of degree greater or equal than specified | 1000 |
 | --isolated_nodes | Displays nodes of degree zero on the final graph | false |
 | --labeled  | Show graph with vertex labels | false |
 | --verbose | Show extra info on terminal | false | 
+|--isometry | Applies a random isometry to the original tensor and displays it | false |
+|--no_visualization | Prevents the display of a new tab with the resulting tensor graph | False |
+|--minimal | Only prints in terminal the random tensor, and, if enabled, all cycles of various lengths | false | 
+|--load_tensor | Loads tensor from file instead of generating a random one [TODO]| "" |
+|--load_graph | Loads tensor graph from file instead of calculating one given a random tensor [TODO]| "" |
 
 ## 3. Sample execution
 

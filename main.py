@@ -8,7 +8,7 @@ def argparser():
     #Parses the values of (n,m,k,q,labeled) as described
     parser = argparse.ArgumentParser(
         description="Build graph from a random 3-tensor",
-        epilog="Example usage: sage script.sage -n=4 -m=3 -k=5 -q=7 -c=3 --strict --labeled --verbose"
+        epilog="Example usage: sage main.py -n=4 -m=3 -k=5 -q=7 -c=3 --strict --labeled --verbose"
     )
     parser.add_argument("-n", type=int, default=4, help="Dimension n for the first vector space")
     parser.add_argument("-m", type=int, default=4, help="Dimension m for the second vector space")

@@ -1,25 +1,13 @@
-#=====================================================================
-# SageMath script: Finding all 4–cycles in the 3–tensor graph via Groebner basis
-# with full projective normalization.
-#
-# We work in projective coordinates by representing a point in P(U) as (1,x2,...,xn),
-# in P(V) as (1,z2,...,zm), and in P(W) as (1,w2,...,wk).
-#
-# For each cycle type, extra linear constraints are added to remove any residual free
-# parameters so that the ideal becomes 0-dimensional.
-#=====================================================================
 import argparse
 from sage.all import *
-
+import random
 #---------------------------
-# 1. Edge condition helper functions.
+# Edge condition (polynomial) helper functions.
 #---------------------------
 def edge_UV(C, u, v, n, m, k, R):
     """
-    For vertices u in U (length n) and v in V (length m), returns a list of k polynomials in R enforcing:
-      For each l in 0,...,k-1:
-         sum_{i=0}^{n-1} sum_{j=0}^{m-1} C[i][j][l] * u[i] * v[j] = 0.
-    u and v are given in projective coordinates (first coordinate = 1).
+    For l < k, computes the polynomials P_l(u,v) = sum_{i=0}^{n-1} sum_{j=0}^{m-1} C[i][j][l] * u[i] * v[j]
+    u,v is an edge iff for all l < k, P_l(u,v) = 0
     """
     eqs = []
     for l in range(k):
@@ -32,9 +20,8 @@ def edge_UV(C, u, v, n, m, k, R):
 
 def edge_UW(C, u, w, n, m, k, R):
     """
-    For vertices u in U (length n) and w in W (length k), returns a list of m polynomials in R enforcing:
-      For each j in 0,...,m-1:
-         sum_{i=0}^{n-1} sum_{l=0}^{k-1} C[i][j][l] * u[i] * w[l] = 0.
+    For each j in 0,...,m-1 computes P_j(u,w) = sum_{i=0}^{n-1} sum_{l=0}^{k-1} C[i][j][l] * u[i] * w[l]
+    u,w is an edge if P_j(u,w) = 0 for all j
     """
     eqs = []
     for j in range(m):
@@ -47,9 +34,8 @@ def edge_UW(C, u, w, n, m, k, R):
 
 def edge_VW(C, v, w, n, m, k, R):
     """
-    For vertices v in V (length m) and w in W (length k), returns a list of n polynomials in R enforcing:
-      For each i in 0,...,n-1:
-         sum_{j=0}^{m-1} sum_{l=0}^{k-1} C[i][j][l] * v[j] * w[l] = 0.
+    For each i in 0,...,n-1 computes P_i(v,w) = sum_{j=0}^{m-1} sum_{l=0}^{k-1} C[i][j][l] * v[j] * w[l]
+    v,w is an edge if for all i P_i(v,w) = 0
     """
     eqs = []
     for i in range(n):
@@ -60,14 +46,18 @@ def edge_VW(C, v, w, n, m, k, R):
         eqs.append(poly)
     return eqs
 
+
 #---------------------------
-# 2. Cycle type functions.
-# Each vertex is represented with its first coordinate fixed to 1.
-# Extra linear constraints are added to force the system to be 0-dimensional.
+# Cycle type functions.
 #---------------------------
 
-# Type A: vertices: u, u' in U; v, v' in V.
 def typeA_closed_walks(C, n, m, k, q):
+    """
+    Type A: vertices: u, u' in U; v, v' in V.
+
+    we enforce u_0 = u'_1 = 1 and u_1 = u'_0 = 0
+    and v_0 = v'_1 = 1 and v_1 = v'_0 = 0 to ensure ideal of degree 0
+    """
     var_names = (['x{}'.format(i) for i in range(3, n+1)] +
                  ['y{}'.format(i) for i in range(3, n+1)] +
                  ['z{}'.format(j) for j in range(3, m+1)] +
@@ -87,16 +77,19 @@ def typeA_closed_walks(C, n, m, k, q):
     
     I = R.ideal(eqs)
     I.groebner_basis()
-    #assert (I.dimension() == 0)
-    #print("Computing Groebner basis using F4 for Type A")
-    #I.groebner_basis(algorithm='slimgb')
     if verbose:
-        print("Groebner basis computed. Now computing variety.")
+        print("Computing variety")
     sols = I.variety()
     return sols
 
 # Type B: vertices: u, u' in U; w, w' in W.
 def typeB_closed_walks(C, n, m, k, q):
+    """
+    Type B: vertices: u, u' in U; w, w' in W
+
+    we enforce u_0 = u'_1 = 1 and u_1 = u'_0 = 0
+    and w_0 = w'_1 = 1 and w_1 = w'_0 = 0 to ensure ideal of degree 0
+    """
     var_names = (['x{}'.format(i) for i in range(3, n+1)] +
                  ['y{}'.format(i) for i in range(3, n+1)] +
                  ['z{}'.format(l) for l in range(3, k+1)] +
@@ -123,6 +116,12 @@ def typeB_closed_walks(C, n, m, k, q):
 
 # Type C: vertices: v, v' in V; w, w' in W.
 def typeC_closed_walks(C, n, m, k, q):
+    """
+    Type C: vertices: v, v' in V; w, w' in W.
+
+    we enforce v_0 = v'_1 = 1 and v_1 = v'_0 = 0
+    and w_0 = w'_1 = 1 and w_1 = w'_0 = 0 to ensure ideal of degree 0
+    """
     var_names = (['x{}'.format(j) for j in range(3, m+1)] +
                  ['y{}'.format(j) for j in range(3, m+1)] +
                  ['z{}'.format(l) for l in range(3, k+1)] +
@@ -148,6 +147,12 @@ def typeC_closed_walks(C, n, m, k, q):
 
 # Type D: vertices: u, u' in U; v in V; w in W.
 def typeD_closed_walks(C, n, m, k, q):
+    """
+    Type D: vertices: u, u' in U; v in V; w in W
+
+    we enforce the first coordinate of v and w to be 1
+    and u_0 != u'_0 
+    """
     var_names = (['x{}'.format(i) for i in range(3, n+1)] +
                  ['y{}'.format(i) for i in range(3, n+1)] +
                  ['z{}'.format(j) for j in range(2, m+1)] +
@@ -173,6 +178,12 @@ def typeD_closed_walks(C, n, m, k, q):
 
 # Type E: vertices: u in U; v, v' in V; w in W.
 def typeE_closed_walks(C, n, m, k, q):
+    """
+    Type E: vertices: u in U; v, v' in V; w in W.
+
+    we enforce the first coordinate of u and w to be 1
+    and v_0 != v'_0 
+    """
     var_names = (['x{}'.format(i) for i in range(2, n+1)] +
                  ['z{}'.format(j) for j in range(3, m+1)] +
                  ['w{}'.format(j) for j in range(3, m+1)] +
@@ -198,6 +209,12 @@ def typeE_closed_walks(C, n, m, k, q):
 
 # Type F: vertices: u in U; v in V; w, w' in W.
 def typeF_closed_walks(C, n, m, k, q):
+    """
+    Type F: vertices: u in U; v in V; w, w' in W.
+
+    we enforce the first coordinate of u and v to be 1
+    and w_0 != w'_0 
+    """
     var_names = (['x{}'.format(i) for i in range(2, n+1)] +
                  ['z{}'.format(j) for j in range(2, m+1)] +
                  ['y{}'.format(l) for l in range(3, k+1)] +
@@ -222,37 +239,26 @@ def typeF_closed_walks(C, n, m, k, q):
     return sols
 
 #---------------------------
-# 3. Master function to run all types and display solution counts.
+# 3. Master function to run all types
 #---------------------------
 def find_all_4cycles(C, n, m, k, q):
-    if verbose:
-        print("Computing type A")
-    solA = typeA_closed_walks(C, n, m, k, q)
-    if verbose:
-        print(f"{len(solA)} walks of type A found")
-        print("Computing type B")
-    solB = typeB_closed_walks(C, n, m, k, q)
-    if verbose:
-        print(f"{len(solB)} walks of type B found")
-        print("Computing type C")
-    solC = typeC_closed_walks(C, n, m, k, q)
-    if verbose:
-        print(f"{len(solC)} walks of type C found")
-        print("Computing type D")
-    solD = typeD_closed_walks(C, n, m, k, q)
-    if verbose:
-        print(f"{len(solD)} walks of type D found")
-        print("Computing type E")
-    solE = typeE_closed_walks(C, n, m, k, q)
-    if verbose:
-        print(f"{len(solE)} walks of type E found")
-        print("Computing type F")
-    solF = typeF_closed_walks(C, n, m, k, q)
-    if verbose:
-        print(f"{len(solF)} walks of type F found")
+    sols = [0] * 6
+    functions = [("A",typeA_closed_walks), \
+                 ("B", typeB_closed_walks), \
+                 ("C", typeC_closed_walks), \
+                 ("D", typeD_closed_walks), \
+                 ("E", typeE_closed_walks), \
+                 ("F", typeF_closed_walks)]
     
-    return {"Type A": solA, "Type B": solB, "Type C": solC,
-            "Type D": solD, "Type E": solE, "Type F": solF}
+    for idx, (type_, func) in enumerate(functions):
+        if verbose:
+            print(f"Computing type {type_}")
+        sols[idx] = func(C,n,m,k,q)
+        if verbose:
+            print(f"{len(sols[idx])} walks of type {type_} found")
+    
+    return {"Type A": sols[0], "Type B": sols[1], "Type C": sols[2],
+            "Type D": sols[3], "Type E": sols[4], "Type F": sols[5]}
 
 #---------------------------
 # 4. Usage
@@ -260,7 +266,6 @@ def find_all_4cycles(C, n, m, k, q):
 def example_all_types(q,n,m,k):
     GFq = GF(q)
     
-    import random
     random.seed(0)
     C = [[[GFq.random_element() for _ in range(k)]
              for __ in range(m)]
@@ -288,8 +293,8 @@ def example_all_types(q,n,m,k):
 def argparser():
     #Parses the values of (n,m,k,q,labeled) as described
     parser = argparse.ArgumentParser(
-        description="Build graph from a random 3-tensor",
-        epilog="Example usage: sage script.sage -n=4 -m=3 -k=5 -q=7 -c=3 --strict --labeled --verbose"
+        description="Finds constrained 4-cycles of random tensor graph",
+        epilog="Example usage: sage groebner_solver.py -q=5 -n=4 --same_dim --minimal"
     )
     parser.add_argument("-n", type=int, default=5, help="Dimension n for the first vector space")
     parser.add_argument("-m", type=int, default=5, help="Dimension m for the second vector space")

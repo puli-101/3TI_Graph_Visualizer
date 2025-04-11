@@ -287,7 +287,7 @@ def example_all_types(q,n,m,k):
             print(f"{typ}: Found {len(sol)} solution(s)")
         elif csv:
             print(f"{len(sol)},",end="") 
-        if sol:
+        if sol and not(csv):
             print(f"{typ}: {sol}")
             total_sol += len(sol)
     if not(csv):

@@ -285,10 +285,15 @@ def example_all_types(q,n,m,k):
     for typ, sol in solutions.items():
         if verbose:
             print(f"{typ}: Found {len(sol)} solution(s)")
+        elif csv:
+            print(f"{len(sol)},",end="") 
         if sol:
             print(f"{typ}: {sol}")
             total_sol += len(sol)
-    print(f"Total number of 4-cycles: {total_sol}")
+    if not(csv):
+        print(f"Total number of 4-cycles: {total_sol}")
+    else:
+        print()
 
 def argparser():
     #Parses the values of (n,m,k,q,labeled) as described
@@ -302,11 +307,12 @@ def argparser():
     parser.add_argument("-q", type=int, default=13, help="Prime field size")
     parser.add_argument("--same_dim", action="store_true", help="Coerces each dimension to be equal to n (i.e. n = m = k)")
     parser.add_argument("--minimal", action="store_true", help="Only displays random tensor and solutions (if any)")
+    parser.add_argument("--csv", action="store_true", help="Outputs results in csv format")
     return parser.parse_args()
 
 if __name__ == "__main__":
     global verbose 
-
+    global csv
     args = argparser()
     
     #Dimensions of U, V, W.
@@ -320,5 +326,10 @@ if __name__ == "__main__":
         m = k = n
     #verbose:
     verbose = not(args.minimal)
+    #csv
+    csv = args.csv
+    if csv:
+        print(f"{n},{m},{k},{q},",end="")
+        verbose = False
     # Run the example
     example_all_types(q,n,m,k)

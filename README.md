@@ -50,4 +50,4 @@ This implementation is only suited for small values $n,m,k,q$. No tests have bee
 
 ## Authors
 
-Developed by David Pulido Cornejo under the supervision of Laurane Marco as part of a combinatorial-algebraic study of the 3-Tensor Isomorphism Problem @ EPFL/LASEC.
+Developed by [David Pulido Cornejo](https://github.com/puli-101) under the supervision of [Laurane Marco](https://lauranemarco.github.io/) as part of a combinatorial-algebraic study of the 3-Tensor Isomorphism Problem @ [EPFL/LASEC](https://lasec.epfl.ch/).

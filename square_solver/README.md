@@ -55,5 +55,5 @@ To use the `groebner_tester.sh` script on your system, modify the location of yo
 
 ## Authors
 
-Developed by David Pulido Cornejo under the supervision of Laurane Marco as part of a combinatorial-algebraic study of the 3-Tensor Isomorphism Problem @ EPFL/LASEC.
+Developed by David Pulido Cornejo under the supervision of [Laurane Marco](https://lauranemarco.github.io/) as part of a combinatorial-algebraic study of the 3-Tensor Isomorphism Problem @ [EPFL/LASEC](https://lasec.epfl.ch/).
 

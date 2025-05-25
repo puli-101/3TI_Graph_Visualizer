@@ -122,7 +122,7 @@ def graph_display(G,n,m,k,q,cycle=None,labeled=False, save=False, loose=False, m
         #nx.draw_networkx_labels(G_vis, pos)
     else:
         #Otherwise just draw the graph
-        nx.draw(G_vis, with_labels=labeled, node_color='white', edgecolors='black')
+        nx.draw(G_vis, with_labels=labeled, node_color='white', edgecolors='black', node_size=8)
 
     if not(minimal):
         #save graph to file

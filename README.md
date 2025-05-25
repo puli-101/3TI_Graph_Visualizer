@@ -1,6 +1,6 @@
 # 3-Tensor Graph Visualizer
 
-## 1. Description
+## 0. Description
 
 <b>Summary: </b>Generates a random 3-tensor represented as a 3-dimensional array, computes the associated graph and displays the result after applying a set of filters (see section 2.) 
 
@@ -8,6 +8,9 @@ In particular, given the finite dimensional vector spaces $U,V,W$ of dimensions 
 
 The computed set of vertices $\mathcal{V}(\mathcal{C})$, corresponds to the disjoint union of projective spaces $\mathcal{V}(\mathcal{C}) := \mathbb{P}(U) \cup \mathbb{P}(V) \cup \mathbb{P}(W)$. On a high level, the set of edges $\mathcal{E}(\mathcal{C})$ is computed as the set of pairs of representatives $(u,v) \in \mathbb{P}(U) \times \mathbb{P}(V)$ (for instance), for which the missing coordinate vanishes, e.g. $(u,v) \in \mathcal{E}(\mathcal{C}) \iff \forall w \in W \mathcal{C}(u,v,w) = 0$ (for implementation details see section 4.)
 
+## 1. Requirements
+
+- [SageMath](https://www.sagemath.org/)
 
 ## 2. Command-line arguments
 

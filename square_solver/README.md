@@ -4,8 +4,7 @@ This script identifies all **normalized closed walks of length 4** in a triparti
 
 ## Requirements
 
-- [SageMath](https://www.sagemath.org/) — required for algebraic computations (Groebner bases, polynomial rings, finite fields).
-- Python 3 — used through the `sage` interpreter.
+- [SageMath](https://www.sagemath.org/)
 
 ## Usage
 

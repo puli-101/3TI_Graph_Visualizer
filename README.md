@@ -48,4 +48,6 @@ If $\forall l \in [1,k], \sum_{i = 1}^{n} \sum_{j = 1}^{m} u_i \cdot v_j \cdot \
 
 This implementation is only suited for small values $n,m,k,q$. No tests have been done with values higher than 10.
 
-<footnote></footnote>
+## Authors
+
+Developed by David Pulido Cornejo under the supervision of Laurane Marco as part of a combinatorial-algebraic study of the 3-Tensor Isomorphism Problem @ EPFL/LASEC.

@@ -35,12 +35,12 @@ sage groebner_solver.py -q=7 -n=4 --same_dim
 
 The solver searches for 4-cycles of the following types:
 
-- **Type A**: `U → V → U′ → V′ → U`
-- **Type B**: `U → W → U′ → W′ → U`
-- **Type C**: `V → W → V′ → W′ → V`
-- **Type D**: `U → V → U′ → W → U`
-- **Type E**: `U → V → W → V′ → U`
-- **Type F**: `U → W → V → W′ → U`
+- **Type A**: `U -> V -> U′ -> V′ -> U`
+- **Type B**: `U -> W -> U′ -> W′ -> U`
+- **Type C**: `V -> W -> V′ -> W′ -> V`
+- **Type D**: `U -> V -> U′ -> W -> U`
+- **Type E**: `U -> V -> W -> V′ -> U`
+- **Type F**: `U -> W -> V -> W′ -> U`
 
 Each type encodes a different shape of closed walk with two or more pinned vertices to ensure that the ideal defined by the polynomial system is zero-dimensional (i.e., has finitely many solutions).
 
@@ -50,7 +50,11 @@ Each type encodes a different shape of closed walk with two or more pinned verti
 - With `--minimal`: prints only the tensor and total number of solutions.
 - With `--csv`: prints a CSV line like `n,m,k,q,typeA_count,typeB_count,...`.
 
+## Warning
+
+To use the `groebner_tester.sh` script on your system, modify the location of your sage environment
+
 ## Authors
 
-Developed by David Pulido Cornejo and collaborators as part of a combinatorial-algebraic investigation into the 3-Tensor Isomorphism Problem.
+Developed by David Pulido Cornejo under the supervision of Laurane Marco as part of a combinatorial-algebraic study of the 3-Tensor Isomorphism Problem @ EPFL/LASEC.
 

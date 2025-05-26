@@ -7,12 +7,12 @@ Graph display and image/graph serialization functions
 """
 
 
-#Finds all unique simple cycles of length k in a graph G
+#Finds all unique simple cycles of length c in a graph G
 #used in graph display to color these ndoes differently
-def find_cycles_of_length_k(G, k):
+def find_cycles_of_length_c(G, c):
     """
     G: A SageMath graph object
-    k: The desired cycle length
+    c: The desired cycle length
 
     return: A list of cycles, where each cycle is represented as a tuple of vertices
 
@@ -23,10 +23,10 @@ def find_cycles_of_length_k(G, k):
     cycles_set = set()
     
     def dfs(start, current, path, visited):
-        if len(path) > k:
+        if len(path) > c:
             return
 
-        if len(path) == k:
+        if len(path) == c:
             #check if there's an edge from the current vertex back to the start
             if start in G.neighbors(current):
                 cycle = path[:]  # A candidate cycle
@@ -106,7 +106,7 @@ def graph_display(G,n,m,k,q,cycle=None,labeled=False, save=False, loose=False, m
         # Define special nodes (e.g., nodes divisible by 20)
         for i in range(u_bound, cycle+1):
             print(f"Finding cycles of length {i}...")
-            special_nodes += find_cycles_of_length_k(G,i)
+            special_nodes += find_cycles_of_length_c(G,i)
             print(special_nodes)
         #Use a layout for consistent positioning
         pos = nx.spring_layout(G_vis)

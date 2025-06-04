@@ -191,3 +191,30 @@ def coerce_tensor(C, q):
 def coerce_list(v, q):
     F = GF(q)
     return [F(x) for x in v]
+
+
+#Read and parse a 3-tensor over F_q
+def parse_tensor_from_file(filename, q):
+    """
+    Parses a 3-tensor from a file into a list of lists of lists over F_q
+    
+    filename (str): Path to the file containing the tensor
+    q: The order of the finite field F_q
+    
+    Returns a 3-dimensional list with elements in F_q
+    """
+    #Define the finite field
+    F = GF(q)
+
+    #Read file content
+    with open(filename, 'r') as f:
+        data_str = f.read()
+    
+    #Use sage_eval to safely parse the list
+    raw_tensor = sage_eval(data_str, locals={'F': F})
+
+    #Convert all entries to elements of F_q
+    T = [[[F(entry) for entry in row] for row in matrix] for matrix in raw_tensor]
+
+    return T
+

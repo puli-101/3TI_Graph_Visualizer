@@ -24,7 +24,7 @@ def argparser():
     parser.add_argument("--isometry", action="store_true", help="Applies a random isometry to the original tensor and displays it")
     parser.add_argument("--no_visualization", action="store_true", help="Prevents the display of a new tab with the resulting tensor graph")
     parser.add_argument("--minimal", action="store_true", help="Only prints in terminal the random tensor, and, if enabled, all cycles of various lengths")
-    parser.add_argument("--load_tensor", type=str, default="", help="Loads tensor from file instead of generating a random one [TODO]")
+    parser.add_argument("--load_tensor", type=str, default="", help="Loads tensor from file instead of generating a random one")
     parser.add_argument("--load_graph", type=str, default="", help="Loads tensor graph from file instead of calculating one given a random tensor [TODO]")
     return parser.parse_args()
 
@@ -94,12 +94,21 @@ if __name__ == "__main__":
     cycle_size = args.c
     loose = args.loose
 
+    #Tensor file
+    file_t = args.load_tensor
+
     #check passed parameters
     if not(minimal):
         print(n,m,k,q,labeled, verbose, u_bound, l_bound)
     
     #Create a random 3-tensor T of dimensions n x m x k over F.
-    T = [[[F.random_element() for _ in range(k)] for _ in range(m)] for _ in range(n)]
+    if file_t == "":
+        T = [[[F.random_element() for _ in range(k)] for _ in range(m)] for _ in range(n)]
+    #Load from memory
+    else:
+        T = parse_tensor_from_file(file_t, q)
+
+
     G = gen_graph(T, n,m,k, F, deg_0, l_bound, u_bound,verbose, minimal)
 
     #Display graph
